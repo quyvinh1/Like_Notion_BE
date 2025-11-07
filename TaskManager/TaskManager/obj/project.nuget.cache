@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1eQlO+BzlqlBPLvoyTLYkgfwQH6HVWqjr1yTG1upagCmmuCQUWXhKONBYyaKSCKNr43yqZMaiXrUCxWAw7uvvA==",
+  "dgSpecHash": "txvyrWDqSG1+xFSKELiR/cZTjUK07Myhmw0nRjGooQcHFCbaMoenvkPHrJL/o+XkX76X4BBO5FzPK8IXyk2tWw==",
   "success": true,
-  "projectFilePath": "D:\\Project_InternCRUD\\TaskManager\\TaskManager\\TaskManager.csproj",
+  "projectFilePath": "D:\\Project_InternCRUD\\BE\\TaskManager\\TaskManager\\TaskManager.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ADMIN\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.1.1\\automapper.extensions.microsoft.dependencyinjection.8.1.1.nupkg.sha512",

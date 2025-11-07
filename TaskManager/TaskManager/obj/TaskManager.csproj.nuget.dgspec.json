@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project_InternCRUD\\TaskManager\\TaskManager\\TaskManager.csproj": {}
+    "D:\\Project_InternCRUD\\BE\\TaskManager\\TaskManager\\TaskManager.csproj": {}
   },
   "projects": {
-    "D:\\Project_InternCRUD\\TaskManager\\TaskManager\\TaskManager.csproj": {
+    "D:\\Project_InternCRUD\\BE\\TaskManager\\TaskManager\\TaskManager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project_InternCRUD\\TaskManager\\TaskManager\\TaskManager.csproj",
+        "projectUniqueName": "D:\\Project_InternCRUD\\BE\\TaskManager\\TaskManager\\TaskManager.csproj",
         "projectName": "TaskManager",
-        "projectPath": "D:\\Project_InternCRUD\\TaskManager\\TaskManager\\TaskManager.csproj",
+        "projectPath": "D:\\Project_InternCRUD\\BE\\TaskManager\\TaskManager\\TaskManager.csproj",
         "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "D:\\Project_InternCRUD\\TaskManager\\TaskManager\\obj\\",
+        "outputPath": "D:\\Project_InternCRUD\\BE\\TaskManager\\TaskManager\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
