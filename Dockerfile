@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
 # Sao chép file .sln và .csproj để restore packages
-COPY BE/TaskManager/*.sln .
+COPY TaskManager/*.sln .
 COPY TaskManager/*.csproj ./TaskManager/
 # (Nếu bạn có các thư mục dự án khác, hãy COPY .csproj của chúng vào đây)
 RUN dotnet restore
