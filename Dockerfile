@@ -1,26 +1,23 @@
-# Giai đoạn 1: Build dự án
-# Sử dụng image .NET SDK (thay 8.0 bằng phiên bản của bạn nếu khác)
+# Giai đoạn 1: Build và Publish
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
-# Sao chép file .sln và .csproj để restore packages
-COPY TaskManager/*.sln .
-COPY TaskManager/*.csproj ./TaskManager/
-# (Nếu bạn có các thư mục dự án khác, hãy COPY .csproj của chúng vào đây)
-RUN dotnet restore
-
-# Sao chép toàn bộ code còn lại và build
+# Bước 1: Copy TẤT CẢ MỌI THỨ từ repo vào /src
+# Bây giờ, /src sẽ có thư mục /src/TaskManager/
 COPY . .
-WORKDIR "/src/TaskManager"
-RUN dotnet build "TaskManager.csproj" -c Release -o /app/build
 
-# Giai đoạn 2: Publish
-FROM build AS publish
-RUN dotnet publish "TaskManager.csproj" -c Release -o /app/publish
+# Bước 2: Chạy restore và chỉ chính xác file .sln
+# (Nó nằm trong thư mục TaskManager)
+RUN dotnet restore "TaskManager/TaskManager.sln"
 
-# Giai đoạn 3: Runtime (Chạy thật)
-# Sử dụng image runtime nhỏ gọn hơn
+# Bước 3: Chạy publish và chỉ chính xác file .csproj
+# (Nó nằm trong TaskManager/TaskManager)
+# Lệnh publish sẽ tự động build, chúng ta không cần build riêng
+RUN dotnet publish "TaskManager/TaskManager/TaskManager.csproj" -c Release -o /app/publish
+
+# Giai đoạn 2: Runtime (Chạy thật)
+# Sử dụng image aspnet nhỏ hơn
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "TaskManager.dll"]
