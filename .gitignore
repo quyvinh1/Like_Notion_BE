@@ -1,2 +1,11 @@
-# Logs
+# Bỏ qua các thư mục build
+[Bb]in/
+[Oo]bj/
+
+# Bỏ qua các file tạm của Visual Studio (User đã từng gặp lỗi với folder này)
 .vs/
+.vscode/
+
+# Bỏ qua các file user-specific
+*.user
+*.suo
