@@ -14,7 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<TaskManagerDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString,
+    sqlOptions => sqlOptions.EnableRetryOnFailure(
+        maxRetryCount: 5,
+        maxRetryDelay: TimeSpan.FromSeconds(30),
+        errorNumbersToAdd: null
+        )
+    ));
 
 builder.Services.AddScoped<IEmailService, SendGridEmailService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
