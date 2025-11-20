@@ -42,7 +42,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                 "http://localhost:5173",
-                "https://likenotion-psi.vercel.app"
+                "https://likenotion-psi.vercel.app",
+                "https://likenotion-peaevk1p3-quyvinh1s-projects.vercel.app"
              )
             .AllowAnyHeader()
             .AllowAnyMethod()
