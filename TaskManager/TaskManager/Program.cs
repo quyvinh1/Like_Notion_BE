@@ -47,7 +47,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "http://localhost:5173",
+                "http://127.0.0.1:5173",
                 "https://likenotion-psi.vercel.app",
                 "https://likenotion-peaevk1p3-quyvinh1s-projects.vercel.app"
              )
