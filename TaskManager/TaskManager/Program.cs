@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 using TaskManager.DBContext;
 using TaskManager.Hubs;
 using TaskManager.Middleware;
@@ -24,7 +25,15 @@ builder.Services.AddDbContext<TaskManagerDbContext>(options =>
 
 builder.Services.AddScoped<IEmailService, SendGridEmailService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+})
+    .AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddAutoMapper(typeof(Program));
@@ -48,8 +57,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                 "http://127.0.0.1:5173",
-                "https://likenotion-psi.vercel.app",
-                "https://likenotion-peaevk1p3-quyvinh1s-projects.vercel.app"
+                "https://likenotion-psi.vercel.app"
              )
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -87,7 +95,11 @@ builder.Services.AddHangfire(config => config
 .UseRecommendedSerializerSettings()
 .UseMemoryStorage());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

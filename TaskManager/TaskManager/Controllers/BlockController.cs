@@ -50,6 +50,31 @@ namespace TaskManager.Controllers
             }
             return null;
         }
+        private async Task<bool> CanEditPage(int pageId)
+        {
+            var userId = GetUserId();
+            var page = await _context.TodoItems.FindAsync(pageId);
+            if (page == null) return false;
+            if (page.OwnerId == userId)
+            {
+                return true;
+            }
+            var permission = await GetUserPermissionForPage(pageId, userId);
+            return permission == PermissionLevel.CanEdit || permission == PermissionLevel.FullAccess;
+             
+        }
+        private async Task<bool> CanViewPage(int pageId)
+        {
+            var userId = GetUserId();
+            var page = await _context.TodoItems.FindAsync(pageId);
+            if (page == null) return false;
+            if (page.OwnerId == userId)
+            {
+                return true;
+            }
+            var permission = await GetUserPermissionForPage(pageId, userId);
+            return permission != null;
+        }
         private async Task<bool> CanAccessPage(int pageId)
         {
             var userId = GetUserId();
@@ -59,7 +84,7 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBlock(int pageId, [FromBody] CreateBlockDto dto)
         {
-            if (!await CanAccessPage(pageId))
+            if (!await CanEditPage(pageId))
             {
                 return Forbid();
             }
@@ -76,13 +101,13 @@ namespace TaskManager.Controllers
             await _context.ContentBlocks.AddAsync(newBlock);
             await _context.SaveChangesAsync();
             var userId = GetUserId();
-            await _hubContext.Clients.Group($"User-{userId}").SendAsync("BlockCreated", pageId, newBlock);
+            await _hubContext.Clients.Group($"Page-{pageId}").SendAsync("BlockCreated", pageId, newBlock);
             return CreatedAtAction(nameof(GetBlockById), new { pageId = pageId, id = newBlock.Id }, newBlock);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBlockById(int pageId, int id)
         {
-            if (!await CanAccessPage(pageId))
+            if (!await CanViewPage(pageId))
             {
                 return Forbid();
             }
@@ -97,7 +122,7 @@ namespace TaskManager.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBlockContent(int pageId, int id, [FromBody] UpdateBlockContentDto dto)
         {
-            if (!await CanAccessPage(pageId))
+            if (!await CanEditPage(pageId))
             {
                 return Forbid();
             }
@@ -136,7 +161,7 @@ namespace TaskManager.Controllers
             await _context.SaveChangesAsync();
 
             var userId = GetUserId();
-            await _hubContext.Clients.Group($"User-{userId}")
+            await _hubContext.Clients.Group($"Page-{pageId}")
                 .SendAsync("BlockUpdated", pageId, block);
             return NoContent();
 
@@ -144,7 +169,7 @@ namespace TaskManager.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBlock(int pageId, int id)
         {
-            if (!await CanAccessPage(pageId))
+            if (!await CanEditPage(pageId))
             {
                 return Forbid();
             }
@@ -165,14 +190,14 @@ namespace TaskManager.Controllers
             }
             await _context.SaveChangesAsync();
             var userId = GetUserId();
-            await _hubContext.Clients.Group($"User-{userId}")
+            await _hubContext.Clients.Group($"Page-{pageId}")
                 .SendAsync("BlockDeleted", pageId, id);
             return NoContent();
         }
         [HttpPut("reorder")]
         public async Task<IActionResult> ReorderBlocks(int pageId, [FromBody] List<ReorderBlockDto> orderedBlocks)
         {
-            if (!await CanAccessPage(pageId))
+            if (!await CanEditPage(pageId))
             {
                 return Forbid();
             }
@@ -200,7 +225,7 @@ namespace TaskManager.Controllers
                 return StatusCode(500, "An error occurred while reordering blocks.");
             }
             var userId = GetUserId();
-            await _hubContext.Clients.Group($"User-{userId}")
+            await _hubContext.Clients.Group($"Page - {pageId}") 
                 .SendAsync("BlocksReordered", pageId, orderedBlocks);
             return NoContent();
         }

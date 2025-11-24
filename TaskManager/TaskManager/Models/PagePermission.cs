@@ -20,6 +20,7 @@ namespace TaskManager.Models
     public enum PermissionLevel
     {
         ReadOnly,
+        CanEdit,
         FullAccess
     }
 }
