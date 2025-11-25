@@ -270,10 +270,11 @@ namespace TaskManager.Controllers
             {
                 return Forbid();
             }
-            _dbContext.TodoItems.Remove(todoItem);
-            await _dbContext.SaveChangesAsync();
+            todoItem.IsDelete = true;
+            todoItem.DeleteAt = DateTime.UtcNow;
             await _hubContext.Clients.Group($"User-{userId}")
                 .SendAsync("TaskDeleted", new { Id = id, ParentId = parentId });
+            await _dbContext.SaveChangesAsync();
             return NoContent();
         }
         [HttpGet("{taskId}/children")]
@@ -570,6 +571,41 @@ namespace TaskManager.Controllers
                 notification.IsRead = true;
             }
             _dbContext.Notifications.UpdateRange(notifications);
+            await _dbContext.SaveChangesAsync();
+            return NoContent();
+        }
+        [HttpGet("trash")]
+        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTrashItems()
+        {
+            var userId = GetUserId();
+            return await _dbContext.TodoItems
+                .IgnoreQueryFilters()
+                .Where(t => t.OwnerId == userId && t.IsDelete == true)
+                .OrderByDescending(t => t.DeleteAt)
+                .ToListAsync();
+        }
+        [HttpPost("trash/{id}/restore")]
+        public async Task<IActionResult> RestoreFromTrash(int id)
+        {
+            var page = await _dbContext.TodoItems
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.Id == id);
+            if (page == null) return NotFound();
+            page.IsDelete = false;
+            page.DeleteAt = null;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok( new { message = "Page restored"});
+
+        }
+        [HttpDelete("trash/{id}/permanent")]
+        public async Task<IActionResult> DeletePermanent (int id)
+        {
+            var page = await _dbContext.TodoItems
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.Id == id);
+            if (page == null) return NotFound();
+            _dbContext.TodoItems.Remove(page);
             await _dbContext.SaveChangesAsync();
             return NoContent();
         }

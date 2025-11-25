@@ -129,6 +129,18 @@ builder.Services.AddSwaggerGen(options =>
 
 
 });
+var redisConnectionString = builder.Configuration["Redis:ConnectionString"];
+if(!string.IsNullOrEmpty(redisConnectionString))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConnectionString;
+        options.InstanceName = "LikeNotion_";
+    });
+} else
+{
+    builder.Services.AddDistributedMemoryCache();
+}
 
 var app = builder.Build();
 

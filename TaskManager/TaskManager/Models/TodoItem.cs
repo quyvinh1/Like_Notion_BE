@@ -14,6 +14,9 @@ namespace TaskManager.Models
         public int? ParentId { get; set; }
         public string? Icon { get; set; }
         public string? CoverImage { get; set; }
+        public bool IsDelete { get; set; } = false;
+        public DateTime? DeleteAt { get; set; }
+
         [ForeignKey("ParentId")]
         [JsonIgnore]
         public virtual TodoItem Parent { get; set; }

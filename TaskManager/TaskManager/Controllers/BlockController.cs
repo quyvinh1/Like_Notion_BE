@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using TaskManager.DBContext;
 using TaskManager.DTOs;
@@ -19,16 +21,18 @@ namespace TaskManager.Controllers
         private readonly TaskManagerDbContext _context;
         private readonly IHubContext<TaskHubs> _hubContext;
         private readonly UserManager<User> _userManager;
+        private readonly IDistributedCache _cache;
         private string GetUserId()
         {
             var userId = User?.FindFirstValue("UserId");
             return userId;
         }
-        public BlockController(TaskManagerDbContext context, IHubContext<TaskHubs> hubContext, UserManager<User> user)
+        public BlockController(TaskManagerDbContext context, IHubContext<TaskHubs> hubContext, UserManager<User> user, IDistributedCache cache)
         {
             _context = context;
             _hubContext = hubContext;
             _userManager = user;
+            _cache = cache;
         }
         private async Task<PermissionLevel?> GetUserPermissionForPage(int pageId, string userId)
         {
@@ -111,12 +115,25 @@ namespace TaskManager.Controllers
             {
                 return Forbid();
             }
+
+            string keyCache = $"page_{pageId}";
+            string cacheData = await _cache.GetStringAsync(keyCache);
+            if (cacheData != null)
+            {
+                return Ok(JsonSerializer.Deserialize<object>(cacheData));
+            }
+
             var block = await _context.ContentBlocks
                 .FirstOrDefaultAsync(b => b.Id == id && b.PageId == pageId);
             if (block == null)
             {
                 return NotFound();
             }
+
+            await _cache.SetStringAsync(keyCache, JsonSerializer.Serialize(block), new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            });
             return Ok(block);
         }
         [HttpPut("{id}")]

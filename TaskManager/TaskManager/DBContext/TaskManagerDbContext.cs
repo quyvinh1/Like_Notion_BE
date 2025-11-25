@@ -18,6 +18,7 @@ namespace TaskManager.DBContext
         public DbSet<PagePermission> PagePermissions { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -45,6 +46,7 @@ namespace TaskManager.DBContext
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<TodoItem>().HasQueryFilter(t => !t.IsDelete);
         }
 
     }
