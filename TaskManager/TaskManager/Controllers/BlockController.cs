@@ -143,12 +143,21 @@ namespace TaskManager.Controllers
             {
                 return Forbid();
             }
+            string cacheKey = $"page_{pageId}";
+            string cacheData = await _cache.GetStringAsync(cacheKey);
+
+            if (cacheData != null) 
+            {
+                return Ok(JsonSerializer.Deserialize<object>(cacheData));
+            }
             var block = await _context.ContentBlocks
                 .FirstOrDefaultAsync(b => b.Id == id && b.PageId == pageId);
             if (block == null)
             {
                 return NotFound();
             }
+            await _cache.RemoveAsync(cacheKey);
+
             block.Content = dto.Content;
             _context.ContentBlocks.Update(block);
             await _context.SaveChangesAsync();
@@ -190,6 +199,8 @@ namespace TaskManager.Controllers
             {
                 return Forbid();
             }
+            var keyCache = $"page_{pageId}";
+            var cacheData = await _cache.GetStringAsync(keyCache);
             var block = await _context.ContentBlocks
                 .FirstOrDefaultAsync(b => b.Id == id && b.PageId == pageId);
             if (block == null)
