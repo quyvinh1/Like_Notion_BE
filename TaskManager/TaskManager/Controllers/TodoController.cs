@@ -609,5 +609,26 @@ namespace TaskManager.Controllers
             await _dbContext.SaveChangesAsync();
             return NoContent();
         }
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateTaskStatus(int id, [FromBody] UpdateTaskStatusDto request)
+        {
+            var task = await _dbContext.TodoItems.FindAsync(id);
+            if(task == null)
+            {
+                return NotFound();
+            }
+            task.Status = request.Status;
+            if(request.Status == "Done")
+            {
+                task.IsCompleted = true;
+            } else
+            {
+                task.IsCompleted = false;
+            }
+            await _dbContext.SaveChangesAsync();
+            await _hubContext.Clients.Group($"Page-{task.ParentId}")
+                .SendAsync("TaskStatusUpdated", id, request.Status);
+            return NoContent();
+        }
     }
 }

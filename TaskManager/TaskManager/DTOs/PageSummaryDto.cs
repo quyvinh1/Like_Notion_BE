@@ -9,5 +9,6 @@
         public bool IsCompleted { get; set; }
         public DateTime? DueDate { get; set; }
         public string? Icon { get; set; }
+        public string Status { get; set; }
     }
 }

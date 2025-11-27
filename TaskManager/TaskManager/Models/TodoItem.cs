@@ -16,7 +16,7 @@ namespace TaskManager.Models
         public string? CoverImage { get; set; }
         public bool IsDelete { get; set; } = false;
         public DateTime? DeleteAt { get; set; }
-
+        public string Status { get; set; } = "To Do";
         [ForeignKey("ParentId")]
         [JsonIgnore]
         public virtual TodoItem Parent { get; set; }

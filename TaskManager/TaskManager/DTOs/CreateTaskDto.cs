@@ -12,5 +12,6 @@ namespace TaskManager.DTOs
         public DateTime? DueDate { get; set; }
         public int? CategoryId { get; set; }
         public int? ParentId { get; set; }
+        public string Status { get; set; }
     }
 }
