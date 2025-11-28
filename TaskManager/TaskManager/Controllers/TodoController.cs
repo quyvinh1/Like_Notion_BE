@@ -630,5 +630,25 @@ namespace TaskManager.Controllers
                 .SendAsync("TaskStatusUpdated", id, request.Status);
             return NoContent();
         }
+        [HttpPatch("{id}/dates")]
+        public async Task<IActionResult> UpdateTaskDates(int id, [FromBody] UpdateDateDto request)
+        {
+            var task = await _dbContext.TodoItems.FindAsync(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
+            task.StartDate = request.StartDate;
+            task.DueDate = request.DueDate;
+            await _dbContext.SaveChangesAsync();
+            await _hubContext.Clients.Group($"Page-{task.ParentId}")
+                .SendAsync("TaskDatesUpdated", id, request.StartDate, request.DueDate);
+            return NoContent();
+        }
+    }
+    public class UpdateDateDto
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? DueDate { get; set; }
     }
 }

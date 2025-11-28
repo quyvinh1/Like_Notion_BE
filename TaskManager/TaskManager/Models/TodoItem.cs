@@ -9,6 +9,7 @@ namespace TaskManager.Models
         public int Id { get; set; }
         public string TaskName { get; set; }
         public bool IsCompleted { get; set; } = false;
+        public DateTime? StartDate { get; set; }
         public DateTime? DueDate { get; set; }
         public string OwnerId { get; set; }
         public int? ParentId { get; set; }
@@ -17,6 +18,7 @@ namespace TaskManager.Models
         public bool IsDelete { get; set; } = false;
         public DateTime? DeleteAt { get; set; }
         public string Status { get; set; } = "To Do";
+
         [ForeignKey("ParentId")]
         [JsonIgnore]
         public virtual TodoItem Parent { get; set; }
