@@ -18,7 +18,11 @@ namespace TaskManager.Models
         public bool IsDelete { get; set; } = false;
         public DateTime? DeleteAt { get; set; }
         public string Status { get; set; } = "To Do";
+        public int? WorkspaceId { get; set; }
 
+        [ForeignKey("WorkspaceId")]
+        [JsonIgnore]
+        public virtual Workspace Workspace { get; set; }
         [ForeignKey("ParentId")]
         [JsonIgnore]
         public virtual TodoItem Parent { get; set; }
